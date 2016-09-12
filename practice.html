@@ -1,20 +1,124 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <title>Gamedev Canvas Workshop</title>
-    <style>
-    	* { padding: 0; margin: 0; }
-    	canvas { background-image: stol.jpg; display: block; margin: 0 auto; }
-    </style>
-</head>
-<body>
+    <head>
+        <meta charset="utf-8" />
+        <title>Gamedev</title>
+        <style>
+        	* { padding: 0; margin: 0; }
+        	body {  display: block; margin: 0 auto; }
+		h1 { color: blue; text-align: center; }
+		.thing3 { display: none; }
+		#computerScore { color: red; display: none; }
+		#userScore { color: green; }
+		#card { display: inline-block; }
+	</style>
+    </head>
+    <body onload="showCard()">
+	<h1>GHOST BLITZ</h1>
+	<div id="score">
+		<h3 id="userScore">Ваш счёт: </h3>
+		<h3 id="computerScore">Счёт оппонента: </h3>
+		<!--<h3 id="reactionTime">Время: </h3>-->
+	</div>
+	
+	<div id="things">
+		<a href="javascript:showCard();" id="1" class="thing"><img name="ghost" src="ghost.png" /></a>
+		<a href="javascript:showCard();" id="2" class="thing"><img name="bottle" src="bottle.jpg" /></a>
+		<a href="javascript:showCard();" id="3" class="thing"><img name="book" src="book.jpg" /></a>
+		<a href="javascript:showCard();" id="4" class="thing"><img name="mouse" src="mouse.jpg" /></a>
+		<a href="javascript:showCard();" id="5" class="thing"><img name="chair" src="chair.jpg" /></a>
+	</div>
+	
+	<div id="card">
+		<img name="imgCard" src=""/>
+		<h3 id="cardsPack"></h3>
+	</div>
+	<form name="clockform">
+		<p>Время: 
+			<input name="clock" size="6" maxlength="6" value="00.00"> 
+			<p name="label"> </p>
+			<input name="starter" type="button" value="Старт" onclick="findTIME()"> 
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<!--<input name="clearer" type="button" value="Сбросить всё" onclick="clearALL()"> -->
+		</p><p id="marker">
+		</p>
+	</form>
+	<script>
+		var things = document.getElementsByClassName('thing');
+		var divUserScore = document.getElementById('userScore');
+		var userScore = 0;
+		var divComputerScore = document.getElementById('computerScore');
+		var computerScore = 0;
+		var divCardsPack = document.getElementById('cardsPack');
+		var cardNumber = 0;
+		var cardsPack = 9;
+		var cardImg = [];	//for cards
+		
+		function getImages(){
+			for(var image, i = 0; i < cardsPack; i++){
+				image = new Image;
+				image.src = "images/" + i + ".jpg";
+				image.number = i + 1;
+				cardImg.push( image );
+			};
+			return cardImg;
+		};
+		getImages();
+		
+		function showCard(){
+			cardsPack--;
+			if (cardsPack>0){ 
+				divCardsPack.innerHTML = cardsPack;
+			} else if (cardsPack==0){
+				divCardsPack.innerHTML = "Последняя карта!";
+				//return false;
+			}
+			document.images["imgCard"].src = cardImg[cardNumber].src;
+			cardNumber++;	
+		}
+		//секундомер
+		var init=0;
+		var startDate;
+		var clocktimer;
 
-<canvas id="myCanvas" width="480" height="320"></canvas>
+		function clearFields() {
+			init = 0;
+			clearTimeout(clocktimer);
+			document.clockform.clock.value='00.00';
+			document.clockform.label.value='';
+		}
 
-<script>
-	// JavaScript code goes here
-</script>
+		function clearALL() {
+			clearFields();
+			document.getElementById('marker').innerHTML = '';
+		}
 
+		function startTIME() { 
+			var thisDate = new Date();
+			var t = thisDate.getTime() - startDate.getTime();
+			var ms = t%1000; t-=ms; ms=Math.floor(ms/10);
+			t = Math.floor (t/1000);
+			var s = t%60; t-=s;
+			if (s<10) s='0'+s;
+			if (ms<10) ms='0'+ms;
+			if (init==1) document.clockform.clock.value = s + '.' + ms;
+			if (s==5) { 
+				alert("Проиграл!");
+				clearFields();
+				showCard();
+			}
+			clocktimer = setTimeout("startTIME()",10);
+		}
+
+		function findTIME() {
+			if (init==0) {
+				startDate = new Date();
+				startTIME();
+				init=1;
+			} else {
+				clearFields();
+			}
+		}
+	</script>
 </body>
 </html>
